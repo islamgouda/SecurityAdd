@@ -75,7 +75,7 @@ namespace SecurityAdd.Controllers
                     if (found)
                     {
                     await  signInManager.SignInAsync(applicationUser,true);
-                        return View("Index");
+                        return RedirectToAction("Index");
 
                     }
                     else
@@ -95,7 +95,9 @@ namespace SecurityAdd.Controllers
         public async Task<IActionResult> logout()
         {
            await signInManager.SignOutAsync();
-            return View("/Home/Index");
+            //await HttpContext.Authentication.SignOutAsync("MyCookieMiddlewareInstance");
+           
+            return RedirectToAction("LogIn");
         }
 
     }
