@@ -12,7 +12,9 @@ builder.Services.AddDbContext<Context>(options =>
 {
     options.UseSqlServer(con);
 });
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<Context>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<Context>(
+    
+    );
 
 var app = builder.Build();
 

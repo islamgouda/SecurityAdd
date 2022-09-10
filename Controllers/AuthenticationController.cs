@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SecurityAdd.Models;
 using SecurityAdd.ViewModels;
+using System.Linq;
+using System.Security.Claims;
 
 namespace SecurityAdd.Controllers
 {
@@ -21,15 +23,18 @@ namespace SecurityAdd.Controllers
         [Authorize]
         public IActionResult Index()
         {
+            ;
             return View();
         }
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             RegisterVM registerVM=new RegisterVM();
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVM registerVM)
         {
             if (ModelState.IsValid)
@@ -43,6 +48,7 @@ namespace SecurityAdd.Controllers
                  IdentityResult identityResult=await userManager.CreateAsync(applicationUser,registerVM.password);
                 if (identityResult.Succeeded)
                 {
+                 await   userManager.AddToRoleAsync(applicationUser,"Admin");
                  await  signInManager.SignInAsync(applicationUser, false);
                  return   View("Index");
                 }
@@ -74,7 +80,14 @@ namespace SecurityAdd.Controllers
                 bool found= await userManager.CheckPasswordAsync(applicationUser,loginVM.Password);
                     if (found)
                     {
-                    await  signInManager.SignInAsync(applicationUser,true);
+                        Claim cm = new Claim("ITI", "islam");
+                        //User.Claims.Append(cm);
+                        List<Claim> claims = new List<Claim>();
+                        claims.Add(cm);
+                        await  signInManager.SignInWithClaimsAsync(applicationUser,true,claims);
+                       string nn= User.Identity.Name;
+                       
+
                         return RedirectToAction("Index");
 
                     }
